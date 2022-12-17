@@ -1,0 +1,131 @@
+.grid-pane {
+  -fx-background-color: #ffffff;
+  -fx-padding: 10px;
+  -fx-hgap: 10px;
+  -fx-vgap: 10px;
+}
+
+.label {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #000000;
+}
+
+.text-field {
+  -fx-border-color: #cccccc;
+  -fx-border-radius: 5px;
+  -fx-background-color: #ffffff;
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
+}
+
+.text-field:focused {
+  -fx-border-color: #00b8d4;
+  -fx-border-width: 2px;
+}
+
+.password-field {
+  -fx-border-color: #cccccc;
+  -fx-border-radius: 5px;
+  -fx-background-color: #ffffff;
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
+}
+
+.password-field:focused {
+  -fx-border-color: #00b8d4;
+  -fx-border-width: 2px;
+}
+
+.button {
+  -fx-border-color: #cccccc;
+  -fx-border-radius: 5px;
+  -fx-background-color: #00b8d4;
+  -fx-text-fill: #ffffff;
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+}
+
+.button:hover {
+  -fx-background-color: #0052cc;
+}
+
+.button:active {
+  -fx-background-color: #00188f;
+}
+
+.date-picker {
+  -fx-border-color: #cccccc;
+  -fx-border-radius: 5px;
+  -fx-background-color: #ffffff;
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
+}
+
+.alert {
+  -fx-border-color: #cccccc;
+  -fx-border-radius: 5px;
+  -fx-background-color: #ffffff;
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
+}
+
+.alert-success {
+  -fx-border-color: #00b8d4;
+  -fx-text-fill: #00b8d4;
+}
+
+.alert-warning {
+  -fx-border-color: #ffb300;
+  -fx-text-fill: #ffb300;
+}
+
+.alert-danger {
+  -fx-border-color: #d50000;
+  -fx-text-fill: #d50000;
+}
+
+.line-graph {
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
+  -fx-text-fill: #000000;
+}
+
+.line-graph .default-color0.chart-series-line {
+  -fx-stroke: #00b8d4;
+}
+
+.line-graph .default-color1.chart-series-line {
+  -fx-stroke: #0052cc;
+}
+
+.list-view {
+  -fx-border-color: #cccccc;
+  -fx-border-radius: 5px;
+  -fx-background-color: #ffffff;
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
+}
+
+.list-view .cell:hover {
+  -fx-background-color: #f5f5f5;
+}
+
+.list-view .cell:selected {
+  -fx-background-color: #e0e0e0;
+}
+
+.pie-chart {
+  -fx-padding: 10px;
+  -fx-font-size: 14px;
+  -fx-text-fill: #000000;
+}
+
+.pie-chart .default-color0.chart-pie {
+  -fx-pie-color: #00b8d4;
+}
+
+.pie-chart .default-color1.chart-pie {
+  -fx-pie-color: #0052cc;
+}
