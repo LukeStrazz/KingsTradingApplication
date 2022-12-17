@@ -1,12 +1,10 @@
 package com.example.kingstradingapplication;
 
-
 import java.io.*;
 import java.util.ArrayList;
 
 public class DataCenter implements Serializable {
-    private static DataCenter instance = null;
-    private ArrayList<UserAccount> userList = new ArrayList<>();
+    private static ArrayList<UserAccount> userList = new ArrayList<>();
     private UserAccount user;
 
     private DataCenter(){
@@ -14,12 +12,12 @@ public class DataCenter implements Serializable {
 
     public static String fileName = "ApplicationData.dat";
 
-    public static DataCenter readFile() {
+    public static ArrayList<UserAccount> readFile() {
 
         try(ObjectInputStream ois = new ObjectInputStream( new DataInputStream(new BufferedInputStream(
                 new FileInputStream(fileName))))){
-            return((DataCenter) ois.readObject());
-
+            userList = (ArrayList<UserAccount>) ois.readObject();
+            return userList;
         }
         catch(IOException ioe){
 
@@ -33,7 +31,7 @@ public class DataCenter implements Serializable {
     public static void saveFile() {
         try(ObjectOutputStream oos = new ObjectOutputStream(new DataOutputStream(new BufferedOutputStream(
                 new FileOutputStream(fileName))))){
-            oos.writeObject(instance);
+            oos.writeObject(userList);
 
         }
         catch(IOException ioe){
@@ -44,14 +42,7 @@ public class DataCenter implements Serializable {
         }
     }
 
-    public static DataCenter getInstance() {
-        if (instance == null) {
-            instance = new DataCenter();
-        }
-        return instance;
-    }
-
-    public UserAccount getUser(String username, String password){
+    public static UserAccount getUser(String username, String password){
         for(int i = 0; i<userList.size(); i++) {
             if(userList.get(i).getUsername().equals(username) && userList.get(i).getPassword().equals(password)){
                 return userList.get(i);
@@ -66,27 +57,27 @@ public class DataCenter implements Serializable {
 
     }
 
-    public boolean changePassword(String password, String newPassword){
+    public static boolean changePassword(String password, String newPassword){
         for(int i = 0; i<userList.size(); i++) {
             if(userList.get(i).getPassword().equals(password) && !password.equals(newPassword)){
                 userList.get(i).setPassword(newPassword);
+                //save here on file
                 return true;
             }
         }
         return false;
     }
 
-    public boolean signUpUser(String username, String password, String firstName, String lastName){
+    public static boolean signUpUser(String username, String password, String firstName, String lastName){
         UserAccount user = new UserAccount(firstName, lastName, username, password);
         if (validateUser(user)) {
             return userList.add(user);
+            //user object, send to save file here, send user as a parameter not strings, method arg: is user
         }
         return false;
     }
 
-
-
-    public boolean validateUser(UserAccount user){
+    public static boolean validateUser(UserAccount user){
         for(int i = 0; i<userList.size(); i++) {
             if(userList.get(i).getUsername().equals(user.getUsername())){
                 return false;

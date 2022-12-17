@@ -13,7 +13,6 @@ import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -29,8 +28,6 @@ public class StockApp extends Application implements Serializable {
     private Scene loginScene, regScene, hsScene, asScene, marketDataScene, holdingScene, cashScene, changePWScene;
     private Stage stage;
     public static UserAccount currentUser = new UserAccount("", "", "", "");
-
-    private static DataCenter instance = null;
 
     public UserAccount getCurrentUser() {
         return currentUser;
@@ -53,10 +50,9 @@ public class StockApp extends Application implements Serializable {
         }
     }
     public static void main(String[] args) {
-
-        instance = DataCenter.readFile();
+        DataCenter.readFile();
         launch();
-        DataCenter.getInstance().saveFile();
+        DataCenter.saveFile();
     }
 
     public double getTotalMoney(UserAccount user) {
@@ -120,7 +116,7 @@ public class StockApp extends Application implements Serializable {
         btnLogin.setOnAction(a -> {
             String username = tfUsername.getText();
             String password = tfPassword.getText();
-            UserAccount c = DataCenter.getInstance().getUser(username, password);
+            UserAccount c = DataCenter.getUser(username, password);
             hsScene = new Scene(homeScreenGUI(), 1200, 800);
             if (c != null) {
                 currentUser = c;
@@ -144,9 +140,8 @@ public class StockApp extends Application implements Serializable {
             stage.setScene(regScene);
         });
         btnCancel.setOnAction(c -> {
+            DataCenter.saveFile();
             Platform.exit();
-            DataCenter.getInstance().saveFile();
-
         });
 
         return loginPane;
@@ -267,8 +262,8 @@ public class StockApp extends Application implements Serializable {
             String firstName = tfFirstName.getText();
             String surName = tfSurName.getText();
             UserAccount user = new UserAccount(firstName, surName, username, password);
-            boolean b = !(DataCenter.getInstance().validateUser(user));
-            boolean c = DataCenter.getInstance().signUpUser(username, password, firstName, surName);
+            boolean b = !(DataCenter.validateUser(user));
+            boolean c = DataCenter.signUpUser(username, password, firstName, surName);
             if (b) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("User creation unsuccessful.");
@@ -280,8 +275,8 @@ public class StockApp extends Application implements Serializable {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setHeaderText(username + ", Welcome to King's Trading!");
                     alert.setContentText("New User Creation Successful.");
-                    DataCenter.getInstance().signUpUser(username, password, firstName, surName);
-                    DataCenter.getInstance().saveFile();
+                    DataCenter.signUpUser(username, password, firstName, surName);
+                    DataCenter.saveFile();
                     stage.setScene(loginScene);
                     alert.showAndWait();
                 }
@@ -464,7 +459,7 @@ public class StockApp extends Application implements Serializable {
         btnApply.setOnAction(e->{
             String oldPassword = tfOldPassword.getText();
             String newPassword = tfNewPassword.getText();
-            boolean c = DataCenter.getInstance().changePassword(oldPassword, newPassword);
+            boolean c = DataCenter.changePassword(oldPassword, newPassword);
             if(c==true) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("Password Changed Successfully");
