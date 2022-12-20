@@ -1,6 +1,8 @@
 package com.example.kingstradingapplication;
 
-
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -14,38 +16,35 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
+import javafx.util.Duration;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 
 public class StockApp extends Application implements Serializable {
     private Scene loginScene, regScene, hsScene, asScene, marketDataScene, holdingScene, cashScene, changePWScene;
     private Stage stage;
     public static UserAccount currentUser = new UserAccount("", "", "", "");
 
-    public UserAccount getCurrentUser() {
-        return currentUser;
-    }
     @Override
     public void start(Stage primaryStage) throws IOException {
         try {
             this.stage = primaryStage;
 
             Pane loginGui = loginGUI();
-            loginScene = new Scene(loginGui, 1200, 800);
+            loginScene = new Scene(loginGui, 1900, 1000);
             primaryStage.setTitle("King's Trading");
             loginScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
-            regScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
+
 
             primaryStage.setScene(loginScene);
             primaryStage.show();
         }catch(Exception e){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Unable to access King-s Trading.");
+            alert.setContentText("King's Trading runs on Yahoo Finance. \nOn certain Days or Hours, the app will be inoperable. \n\nPlease Come Back Soon!");
             e.printStackTrace();
         }
     }
@@ -53,14 +52,6 @@ public class StockApp extends Application implements Serializable {
         DataCenter.readFile();
         launch();
         DataCenter.saveFile();
-    }
-
-    public double getTotalMoney(UserAccount user) {
-        if (user == null) {
-            return 0;
-        }
-
-        return user.getCashAmount() + user.getTotalStockValue();
     }
 
     private Pane loginGUI() {
@@ -78,10 +69,10 @@ public class StockApp extends Application implements Serializable {
         tfPassword.setPromptText("Enter Password");
 
 
-        loginPane.add(lblUsername, 0, 0);
-        loginPane.add(lblPassword, 0, 1);
-        loginPane.add(tfUsername, 1, 0, 2, 1);
-        loginPane.add(tfPassword, 1, 1, 2, 1);
+        loginPane.add(lblUsername, 0, 1);
+        loginPane.add(lblPassword, 0, 2);
+        loginPane.add(tfUsername, 1, 1, 2, 1);
+        loginPane.add(tfPassword, 1, 2, 2, 1);
 
         HBox hbox = new HBox();
         HBox hbox2 = new HBox();
@@ -100,8 +91,8 @@ public class StockApp extends Application implements Serializable {
         btnCancel.setPrefWidth(60);
         hbox.getChildren().addAll(btnLogin, btnSignUp);
         hbox2.getChildren().addAll(btnCancel);
-        loginPane.add(hbox, 1, 2, 2, 1);
-        loginPane.add(hbox2, 1, 3, 2, 1);
+        loginPane.add(hbox, 1, 3, 2, 1);
+        loginPane.add(hbox2, 1, 4, 2, 1);
 
         class userPassBlocker implements EventHandler<KeyEvent> {
             public void handle(KeyEvent e) {
@@ -117,13 +108,25 @@ public class StockApp extends Application implements Serializable {
             String username = tfUsername.getText();
             String password = tfPassword.getText();
             UserAccount c = DataCenter.getUser(username, password);
-            hsScene = new Scene(homeScreenGUI(), 1200, 800);
             if (c != null) {
                 currentUser = c;
+                System.out.println(currentUser.getUsername());
+                try {
+                    hsScene = new Scene(homeScreenGUI(), 1200, 800);
+                } catch (IOException e) {
+                   // throw new RuntimeException(e);
+                }
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("Welcome Back "+username+"!");
                 alert.setContentText("User login successful.");
                 alert.showAndWait();
+                Pane hsSceneGUI = null;
+                try {
+                    hsSceneGUI = homeScreenGUI();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                hsScene = new Scene(hsSceneGUI,1900, 1000);
                 hsScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
                 stage.setScene(hsScene);
             }
@@ -135,14 +138,31 @@ public class StockApp extends Application implements Serializable {
             }
         });
 
-        regScene = new Scene(registerGUI(), 1200, 800);
+
         btnSignUp.setOnAction(a -> {
+            regScene = new Scene(registerGUI(),1900, 1000);
+            regScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(regScene);
         });
         btnCancel.setOnAction(c -> {
             DataCenter.saveFile();
             Platform.exit();
         });
+
+        Label titleLabel = new Label("King's Trading");
+        titleLabel.setId("title-label");
+        loginPane.add(titleLabel, 1, 0);
+
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setAutoReverse(true);
+
+        KeyValue effect = new KeyValue(titleLabel.styleProperty(), "-fx-effect: dropshadow(gaussian, gold, 20, 0.5, 0, 0);");
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(2000), effect);
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+
+        titleLabel.setStyle("-fx-effect: dropshadow(gaussian, gold, 20, 0.5, 0, 0);");
 
         return loginPane;
     }
@@ -183,6 +203,10 @@ public class StockApp extends Application implements Serializable {
         tfFirstName.setPromptText("Enter First Name");
         tfSurName.setPromptText("Enter Last Name");
 
+        Label lblRRegUsername = new Label("");
+        Label lblRRegPassword = new Label("");
+        Label lblRConfRegPassword = new Label("");
+
         tfFirstName.setOnKeyTyped(e->{
             String username = tfRegUsername.getText();
             String password = tfRegPassword.getText();
@@ -213,6 +237,7 @@ public class StockApp extends Application implements Serializable {
             String confPass = tfRegConfPassword.getText();
             String firstName = tfFirstName.getText();
             String surName = tfSurName.getText();
+            lblRRegUsername.setText("Username Must be Longer Than 6 Characters.");
             if(password.length() >= 1 && username.length() >= 1) {
                 if(firstName.length()>=1 && surName.length()>=1) {
                     btnSignUp.setDisable(!(validateRegister(username, password, confPass, firstName, surName)));
@@ -225,6 +250,7 @@ public class StockApp extends Application implements Serializable {
             String confPass = tfRegConfPassword.getText();
             String firstName = tfFirstName.getText();
             String surName = tfSurName.getText();
+            lblRRegPassword.setText("Password Must be Longer Than Six Characters,\nPassword Must Have One Number.");
             if(password.length() >= 1 && username.length() >= 1) {
                 if(firstName.length()>=1 && surName.length()>=1) {
                     btnSignUp.setDisable(!(validateRegister(username, password, confPass, firstName, surName)));
@@ -237,12 +263,14 @@ public class StockApp extends Application implements Serializable {
             String confPass = tfRegConfPassword.getText();
             String firstName = tfFirstName.getText();
             String surName = tfSurName.getText();
+            lblRConfRegPassword.setText("Passwords Must Match.");
             if(password.length() >= 1 && username.length() >= 1) {
                 if(firstName.length()>=1 && surName.length()>=1) {
                     btnSignUp.setDisable(!(validateRegister(username, password, confPass, firstName, surName)));
                 }
             }
         });
+
 
         pane.add(lblFirstName, 0, 0);
         pane.add(lblSurName, 0, 1);
@@ -254,6 +282,9 @@ public class StockApp extends Application implements Serializable {
         pane.add(tfRegUsername, 1, 2, 2, 1);
         pane.add(tfRegPassword, 1, 3, 2, 1);
         pane.add(tfRegConfPassword, 1, 4, 2, 1);
+        pane.add(lblRRegUsername, 4, 2);
+        pane.add(lblRRegPassword, 4, 3);
+        pane.add(lblRConfRegPassword, 4, 4);
 
         btnSignUp.setOnAction(d -> {
             String username = tfRegUsername.getText();
@@ -293,36 +324,14 @@ public class StockApp extends Application implements Serializable {
 
         return pane;
     }
-    public LineChart dayVsPriceLineChart(ArrayList<String> dates, ArrayList<String> prices, String title){
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Days");
-        yAxis.setLabel("Closing Net");
-        LineChart lineChart = new LineChart<>(xAxis, yAxis);
 
-        lineChart.setTitle(title+" from "+dates.get(1)+", to "+dates.get(dates.size()-1));
-
-        XYChart.Series<String, Number> series1 = new XYChart.Series<>();
-        series1.setName("Days vs Net Worth");
-
-        for (int i=1; i<dates.size(); i++) {
-            System.out.println(prices.get(i));
-            series1.getData().add(new XYChart.Data<>(dates.get(i), Double.valueOf(prices.get(i))));
-        }
-
-        lineChart.getData().add(series1);
-
-        return lineChart;
-    }
-    private Pane homeScreenGUI(){
+    private Pane homeScreenGUI() throws IOException {
         GridPane hsPane = new GridPane();
         hsPane.setAlignment(Pos.CENTER);
         hsPane.setPadding(new Insets(20));
         hsPane.setHgap(10);
         hsPane.setVgap(10);
 
-
-      //  LineChart userNetWorth = dayVsPriceLineChart(null, null);
         Button btnStockAnalyzer = new Button("Stock Market");
         btnStockAnalyzer.setPrefSize(10,40);
         btnStockAnalyzer.setAlignment(Pos.CENTER);
@@ -334,7 +343,7 @@ public class StockApp extends Application implements Serializable {
         btnAccount.setAlignment(Pos.CENTER);
 
         double totalMoney = currentUser.getTotalMoney(currentUser);
-        Label cashAmount = new Label("Total Money: " + roundToDollarAmount(totalMoney));
+        Label cashAmount = new Label("Total Money: $" + roundToDollarAmount(totalMoney) + "\nAvailable Cash: $" + roundToDollarAmount(currentUser.getCashAmount()));
 
         cashAmount.setPadding(new Insets(5));
         Button depWith = new Button("Manage Cash");
@@ -356,55 +365,83 @@ public class StockApp extends Application implements Serializable {
         cashAmount.setPrefWidth(250);
         cashAmount.setPadding(new Insets(5));
         depWith.setPadding(new Insets(5));
-        //userNetWorth.setPrefWidth(450);
-        //userNetWorth.setPrefHeight(450);
 
         Button btnCancel = new Button("Logout");
         btnCancel.setPrefSize(10,40);
         btnCancel.setPrefWidth(100);
         btnCancel.setAlignment(Pos.CENTER);
 
-        LineChart<String, Number> lineChart = new LineChart<>(new CategoryAxis(), new NumberAxis());
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
 
-// Add data to the line chart
+        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Welcome back "+currentUser.getFirstName() +
+                ",\nTotal Investment Evaluation: $ " + roundToDollarAmount(totalMoney - currentUser.getCashAmount()));
+
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Stock Prices");
-        for (StockData stock : currentUser.getWallet().getStocks()) {
-            series.getData().add(new XYChart.Data<>(stock.getSymbol(), stock.getPrice()));
+        series.setName("Seven Day Performance");
+
+        ArrayList<LocalDate> dates = new ArrayList<>();
+        for (int i=6; i>=0; i--) {
+            dates.add(LocalDate.now().minusDays(i));
         }
+        double[] networth = new double[7];
+
+        for (StockData stock : currentUser.getWallet().getStocks()) {
+            for (int i=0; i<7; i++) {
+                if (!dates.get(i).isBefore(stock.getDatePurchased())) {
+                    networth[i] += (stock.getShares()*getCurrentStockPrice(stock.getSymbol()));
+                }
+            }
+        }
+        for (int i=0; i<networth.length; i++) {
+            if (networth[i] != 0) {
+                series.getData().add(new XYChart.Data<>(dates.get(i).toString(), networth[i]));
+            }
+        }
+
         lineChart.getData().add(series);
+
+        lineChart.setPrefHeight(500);
+        lineChart.setPrefWidth(1000);
 
         hbox2.getChildren().addAll(btnAccount, btnStockAnalyzer, btnHoldings, btnCancel);
         vbox.getChildren().addAll(lineChart, hbox2);
         hbox.getChildren().addAll(depWith, cashAmount);
 
 
-
         btnAccount.setOnAction(e->{
-            asScene = new Scene(accountSceneGUI(), 1200, 800);
+            asScene = new Scene(accountSceneGUI(),1900, 1000);
             asScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(asScene);
         });
 
         depWith.setOnAction(e->{
-            cashScene = new Scene(cashSceneGUI(), 1200, 800);
+            cashScene = new Scene(cashSceneGUI(),1900, 1000);
             cashScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(cashScene);
         });
 
         btnStockAnalyzer.setOnAction(e->{
-            marketDataScene = new Scene(marketDataSceneGUI(), 1200, 800);
+            marketDataScene = new Scene(marketDataSceneGUI(),1900, 1000);
             marketDataScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(marketDataScene);
         });
 
         btnHoldings.setOnAction(e->{
-            holdingScene = new Scene(holdingSceneGUI(currentUser), 1200, 800);
+            try {
+                holdingScene = new Scene(holdingSceneGUI(currentUser),1900, 1000);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             holdingScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(holdingScene);
         });
 
         btnCancel.setOnAction(e->{
+            DataCenter.saveFile();
+            loginScene = new Scene(loginGUI(),1900, 1000);
+            loginScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(loginScene);
         });
 
@@ -425,6 +462,7 @@ public class StockApp extends Application implements Serializable {
         btnCancel.setPrefWidth(60);
         btnCancel.setAlignment(Pos.CENTER);
         btnCancel.setOnAction(e->{
+            asScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(asScene);
         });
 
@@ -438,6 +476,11 @@ public class StockApp extends Application implements Serializable {
         tfNewPassword.setPromptText("Enter New Password");
         tfCNewPassword.setPromptText("Confirm New Password");
 
+
+        Label lblchangePW = new Label("");
+        Label lnlCompChange = new Label("");
+        Label lblOrigPw = new Label("");
+
         Button btnApply = new Button("Apply");
         btnApply.setDisable(true);
 
@@ -445,14 +488,17 @@ public class StockApp extends Application implements Serializable {
         btnApply.setAlignment(Pos.CENTER);
 
         tfOldPassword.setOnKeyTyped(e -> {
+            lblOrigPw.setText("Password Must Match User's Current Password.");
             btnApply.setDisable(!(validateChangePW(tfOldPassword.getText(),tfNewPassword.getText(),tfCNewPassword.getText())));
         });
 
         tfNewPassword.setOnKeyTyped(e -> {
+            lblchangePW.setText("Password Must be Longer Than 6 Characters, and Have a Letter and a Number.");
             btnApply.setDisable(!(validateChangePW(tfOldPassword.getText(),tfNewPassword.getText(),tfCNewPassword.getText())));
         });
 
         tfCNewPassword.setOnKeyTyped(e -> {
+            lnlCompChange.setText("New Passwords Must Match.");
             btnApply.setDisable(!(validateChangePW(tfOldPassword.getText(),tfNewPassword.getText(),tfCNewPassword.getText())));
         });
 
@@ -465,6 +511,8 @@ public class StockApp extends Application implements Serializable {
                 alert.setHeaderText("Password Changed Successfully");
                 alert.setContentText("Press 'OK' to Return to the Account Page.");
                 currentUser.setPassword(newPassword);
+                loginScene = new Scene(loginGUI(),1900, 1000);
+                asScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
                 stage.setScene(asScene);
                 alert.showAndWait();
             }
@@ -484,6 +532,11 @@ public class StockApp extends Application implements Serializable {
         changePw.add(tfNewPassword, 1, 4, 2, 1);
         changePw.add(tfCNewPassword, 1, 5, 2, 1);
 
+
+        changePw.add(lblOrigPw, 8, 3);
+        changePw.add(lblchangePW, 8, 4);
+        changePw.add(lnlCompChange, 8, 5);
+
         changePw.add(btnApply,3,6);
         changePw.add(btnCancel,2,6);
 
@@ -500,22 +553,28 @@ public class StockApp extends Application implements Serializable {
         btnCancel.setPrefWidth(60);
         btnCancel.setAlignment(Pos.CENTER);
         btnCancel.setOnAction(e->{
+            try {
+                hsScene = new Scene(homeScreenGUI(),1900, 1000);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            hsScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(hsScene);
         });
 
 
         Button btnChangePassword = new Button("Change Password");
         btnChangePassword.setPrefSize(10,40);
-        btnChangePassword.setPrefWidth(125);
+        btnChangePassword.setPrefWidth(200);
         btnChangePassword.setAlignment(Pos.CENTER);
-        changePWScene = new Scene(changePWGUI(), 1200, 800);
+        changePWScene = new Scene(changePWGUI(),1900, 1000);
         btnChangePassword.setOnAction(e->{
             changePWScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(changePWScene);
         });
 
-        asPane.add(btnCancel, 1, 0,1,1);
-        asPane.add(btnChangePassword, 4, 4,1,1);
+        asPane.add(btnCancel, 0, 0);
+        asPane.add(btnChangePassword, 10, 10);
 
         return asPane;
     }
@@ -531,6 +590,12 @@ public class StockApp extends Application implements Serializable {
         btnCancel.setAlignment(Pos.CENTER);
 
         btnCancel.setOnAction(e->{
+            try {
+                hsScene = new Scene(homeScreenGUI(),1900, 1000);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            hsScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(hsScene);
         });
 
@@ -561,7 +626,8 @@ public class StockApp extends Application implements Serializable {
                     if (Double.valueOf(tfCashAmount.getText())<=currentUser.getCashAmount()) {
                         System.out.println("Withdrew $" + Double.valueOf(tfCashAmount.getText()) + "");
                         currentUser.setCashAmount(currentUser.getCashAmount() - Double.valueOf(tfCashAmount.getText()));
-                        cashScene = new Scene(cashSceneGUI(), 1200, 800);
+                        currentUser.getWallet().addWithdrawal(Double.valueOf(tfCashAmount.getText()), LocalDate.now());
+                        cashScene = new Scene(cashSceneGUI(),1900, 1000);
                         cashScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
                         stage.setScene(cashScene);
                     }
@@ -570,17 +636,29 @@ public class StockApp extends Application implements Serializable {
             btnAddCash.setOnAction(b -> {
                     System.out.println("Added $" + tfCashAmount.getText() + "");
                 currentUser.setCashAmount(currentUser.getCashAmount() + Double.valueOf(tfCashAmount.getText()));
-                cashScene = new Scene(cashSceneGUI(), 1200, 800);
+                currentUser.getWallet().addDeposit(Double.valueOf(tfCashAmount.getText()), LocalDate.now());
+                cashScene = new Scene(cashSceneGUI(),1900, 1000);
                 cashScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
                 stage.setScene(cashScene);
             });
+//here
+        List<CashData> cashTransactionList = currentUser.getWallet().getCash();
+        Collections.reverse(cashTransactionList);
+        ObservableList<CashData> oList = FXCollections.observableList(cashTransactionList);
+
+
+        ListView<CashData> listView = new ListView<>(oList);
+        listView.setPrefWidth(600);
+        listView.setPrefHeight(1000);
+        cashPane.add(listView, 6, 4);
 
         VBox vbox = new VBox();
         HBox hbox = new HBox();
+
         hbox.getChildren().addAll(btnAddCash, btnWithCash);
         vbox.getChildren().addAll(cashAmount, tfCashAmount);
-        cashPane.add(vbox, 4, 8);
-        cashPane.add(hbox, 4, 9);
+        cashPane.add(vbox, 2, 1);
+        cashPane.add(hbox, 2, 2);
 
         return cashPane;
     }
@@ -615,17 +693,14 @@ public class StockApp extends Application implements Serializable {
             ret.add(price);
             return ret;
 
-
-
-        // 1.open connection to remote file via "urlStr" // Scanner class
-        // 2. read from remote (line by line, parse, create a record (arraylist<record>), add this record into ...
-        // ... DataCenter -> StockList -> Stock -> list)
-        // 3.update TableView/"LineChart"
     }
+
     public double getCurrentStockPrice(String stockName) throws IOException {
         LocalDate now = LocalDate.now();
-        long period = getPeriod(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
-        URL url = new URL(getURL(stockName, period, period));
+        LocalDate start = now.minusDays(1);
+        long startPeriod = getPeriod(start.getYear(), start.getMonthValue(), start.getDayOfMonth());
+        long endPeriod = getPeriod(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+        URL url = new URL(getURL(stockName, startPeriod, endPeriod));
         Scanner s = new Scanner(url.openStream());
         int count = 0;
         try {
@@ -646,6 +721,12 @@ public class StockApp extends Application implements Serializable {
         cal.set(y, m-1,d);
         Date date = cal.getTime();
         return date.getTime()/1000;
+    }
+
+    public String getUR2(String stockSymbol, long period1, long period2) {
+        String urlTemplate = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%d&period2=%d&interval=1d&events=history&includeAdjustedClose=true";
+        String urlStr = String.format(urlTemplate, stockSymbol, period1, period2);
+        return urlStr;
     }
     public String getURL(String stockSymbol, long period1, long period2) {
         String urlTemplate = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%d&period2=%d&interval=1d&events=history&includeAdjustedClose=true";
@@ -683,6 +764,12 @@ public class StockApp extends Application implements Serializable {
         btnCancel.setAlignment(Pos.CENTER);
 
         btnCancel.setOnAction(e->{
+            try {
+                hsScene = new Scene(homeScreenGUI(),1900, 1000);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            hsScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(hsScene);
         });
 
@@ -706,100 +793,122 @@ public class StockApp extends Application implements Serializable {
         VBox shareBox = new VBox();
         shareBox.getChildren().addAll(buyShares, btnBuy);
 
-        tfStock.setOnKeyTyped(e->{
-            btnBuy.setDisable(!validateBuyButton(tfStock.getText(), shareCount.getText()));
-        });
 
             shareCount.setDisable(true);
 
         Label lblCurrentPrice = new Label("");
         tfStock.setOnKeyTyped(e->{
+            btnBuy.setDisable(!validateBuyButton(tfStock.getText(), shareCount.getText()));
             shareCount.setDisable(false);
 
             double currentPrice = 0;
             try {
                 currentPrice = getCurrentStockPrice(tfStock.getText());
+
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
 
             lblCurrentPrice.setText("Stock Value: " + roundToDollarAmount(currentPrice));
+            cost.setText("  Available Cash: $" + roundToDollarAmount(currentUser.getCashAmount()));
+
+            if(!shareCount.getText().equals(null)){
+                String shareCountString = shareCount.getText();
+                try {
+                    btnBuy.setDisable(!validateBuyButton(tfStock.getText(), shareCount.getText()));
+                    int shareCountInteger = Integer.valueOf(shareCountString);
+
+                    double totalPrice = (shareCountInteger * currentPrice);
+                    cost.setText("  Available Cash: $" + roundToDollarAmount(currentUser.getCashAmount()) + "\n  Total price: " + roundToDollarAmount(totalPrice) );
+                } catch (NumberFormatException error) {
+                    error.printStackTrace();
+                }            }
         });
 
         shareCount.setOnKeyTyped(e->{
                     String shareCountString = shareCount.getText();
                     String tickerSearch = tfStock.getText();
-
-                    if(Double.valueOf(shareCountString)>=1 && !tickerSearch.equals("") && !shareCountString.equals("")) {
-                        try {
-                            btnBuy.setDisable(!validateBuyButton(tfStock.getText(), shareCount.getText()));
-                            int shareCountInteger = Integer.valueOf(shareCountString);
-                            double currentPrice = getCurrentStockPrice(tfStock.getText());
-                            double totalPrice = (shareCountInteger * currentPrice);
-                            cost.setText("  Total price: " + roundToDollarAmount(totalPrice));
-                        } catch (NumberFormatException | IOException error) {
+                    try {
+                        if (Double.valueOf(shareCountString) >= 1 && !tickerSearch.equals("") && !shareCountString.equals("")) {
+                            try {
+                                btnBuy.setDisable(!validateBuyButton(tfStock.getText(), shareCount.getText()));
+                                int shareCountInteger = Integer.valueOf(shareCountString);
+                                double currentPrice = getCurrentStockPrice(tfStock.getText());
+                                double totalPrice = (shareCountInteger * currentPrice);
+                                cost.setText("  Available Cash: $" + roundToDollarAmount(currentUser.getCashAmount()) + "\n  Total price: " + roundToDollarAmount(totalPrice) );
+                            } catch (NumberFormatException | IOException error) {
                             error.printStackTrace();
+                            }
                         }
+                    } catch (NumberFormatException t) {
+
                     }
         });
 
 
 
-        if (start.getValue() != null && end.getValue() !=null) {
             btnApply.setDisable(false);
             btnApply.setOnAction(e -> {
-                LocalDate period1 = start.getValue();
-                LocalDate period2 = end.getValue();
-                int year1 = period1.getYear();
-                int month1 = period1.getMonthValue();
-                int day1 = period1.getDayOfMonth();
-                int year2 = period2.getYear();
-                int month2 = period2.getMonthValue();
-                int day2 = period2.getDayOfMonth();
+                if (start.getValue() != null && end.getValue() != null) {
+                    LocalDate period1 = start.getValue();
+                    LocalDate period2 = end.getValue();
+                    int year1 = period1.getYear();
+                    int month1 = period1.getMonthValue();
+                    int day1 = period1.getDayOfMonth();
+                    int year2 = period2.getYear();
+                    int month2 = period2.getMonthValue();
+                    int day2 = period2.getDayOfMonth();
 
-                long startPeriod = getPeriod(year1, month1, day1);
-                long endPeriod = getPeriod(year2, month2, day2);
+                    long startPeriod = getPeriod(year1, month1, day1);
+                    long endPeriod = getPeriod(year2, month2, day2);
 
-                String stockSymbol = tfStock.getText();
-                String strUrl = getURL(stockSymbol, startPeriod, endPeriod);
+                    String stockSymbol = tfStock.getText();
+                    String strUrl = getURL(stockSymbol, startPeriod, endPeriod);
 
-                ArrayList<ArrayList<String>> ret = new ArrayList<>();
-                try {
-                    ret = getStockInfo(strUrl);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                    ArrayList<ArrayList<String>> ret = new ArrayList<>();
+                    try {
+                        ret = getStockInfo(strUrl);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    LineChart<String, Number> lineChart = dayVsPriceLineChart(ret.get(0), ret.get(1), stockSymbol);
+                    LineChart<String, Number> lineChartFive = fiveDayVsPriceLineChart(ret.get(0), ret.get(1), stockSymbol);
+
+                    hbox2.getChildren().removeAll();
+                    vbox.getChildren().removeAll();
+                    GridPane newPane = (GridPane) marketDataSceneGUI();
+                    newPane.add(lineChart, 2, 6);
+                    newPane.add(lineChartFive, 2, 8);
+                    marketDataScene = new Scene(newPane,1900, 1000);
+                    marketDataScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
+                    stage.setScene(marketDataScene);
+
                 }
+                });
 
-                hbox2.getChildren().removeAll();
-                vbox.getChildren().removeAll();
-
-                LineChart lineChart = dayVsPriceLineChart(ret.get(0), ret.get(1), stockSymbol);
-
-                marketDataPane.add(lineChart, 2, 6);
-
-            });
-        }
 
         btnBuy.setOnAction(e->{
-
             String shareCountString = shareCount.getText();
-
             if(!shareCountString.equals("")) {
                 try {
-
                     int shareCountInteger = Integer.valueOf(shareCountString);
                     double currentPrice = getCurrentStockPrice(tfStock.getText());
                     if ((shareCountInteger * currentPrice) > currentUser.getCashAmount()) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setHeaderText("Purchase Unsuccessful");
-                        alert.setContentText("Please try again.");
+                        alert.setContentText("User may have insufficient funds. Please try again.");
                         alert.showAndWait();
                     } else {
-                        currentUser.getWallet().addStock(tfStock.getText(), currentPrice, shareCountInteger, today());
+                        currentUser.getWallet().addStock(tfStock.getText(), currentPrice, shareCountInteger, today(), "Purchase");
                         currentUser.setCashAmount(currentUser.getCashAmount() - (shareCountInteger * currentPrice));
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                         alert.setHeaderText("Purchase Successful");
                         alert.setContentText("Shares Bought: " + shareCountInteger + ", Amount Purchased: " + roundToDollarAmount(shareCountInteger * currentPrice));
+                        GridPane newPane = (GridPane) marketDataSceneGUI();
+                        marketDataScene = new Scene(newPane,1900, 1000);
+                        marketDataScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
+                        stage.setScene(marketDataScene);
                         alert.showAndWait();
                     }
                 } catch (NumberFormatException | IOException error) {
@@ -812,7 +921,6 @@ public class StockApp extends Application implements Serializable {
         hbox2.setAlignment(Pos.CENTER);
         hbox2.getChildren().add(vbox);
 
-
         marketDataPane.add(hbox2, 2, 0,1,1);
         marketDataPane.add(lblCurrentPrice, 2, 2);
         marketDataPane.add(shareBox, 2, 5,1,1);
@@ -824,24 +932,61 @@ public class StockApp extends Application implements Serializable {
         return LocalDate.now();
     }
 
-    public PieChart userPieChart(){
-        PieChart pieChart = new PieChart();
-        pieChart.setTitle("user"+" Pie Chart");
+    public LineChart dayVsPriceLineChart(ArrayList<String> dates, ArrayList<String> prices, String title){
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Days");
+        yAxis.setLabel("Closing Net");
+        LineChart lineChart = new LineChart<>(xAxis, yAxis);
 
-        ObservableList<PieChart.Data> list = FXCollections.observableArrayList();
+        lineChart.setTitle(title + " from " + dates.get(1) + ", to " + dates.get(dates.size()-1));
 
-        list.add(new PieChart.Data("TSLA", 200));
-        list.add(new PieChart.Data("GOGL", 350));
-        list.add(new PieChart.Data("AMRS", 560));
-        list.add(new PieChart.Data("RBLX", 226));
-        list.add(new PieChart.Data("T", 10));
+        XYChart.Series<String, Number> series1 = new XYChart.Series<>();
+        series1.setName("Days vs Net Worth");
 
-        pieChart.setData(list);
+        for (int i=1; i<dates.size(); i++) {
+            System.out.println(prices.get(i));
+            series1.getData().add(new XYChart.Data<>(dates.get(i), Double.valueOf(prices.get(i))));
+        }
 
-        return pieChart;
+        lineChart.getData().add(series1);
+
+        return lineChart;
     }
 
-    private Pane holdingSceneGUI(UserAccount currentUser){
+    LineChart<String, Number> fiveDayVsPriceLineChart(ArrayList<String> dates, ArrayList<String> prices, String stockSymbol) {
+        ArrayList<String> movingAverages = new ArrayList<>();
+        for (int i = 1; i < prices.size(); i++) {
+            double sum = 0;
+            int count = 0;
+            for (int j = i; j > i - 5 && j >= 1; j--) {
+                sum += Double.valueOf(prices.get(j));
+                count++;
+            }
+            movingAverages.add(String.valueOf(sum / count));
+        }
+        // Create the x-axis and y-axis
+        final CategoryAxis xAxis = new CategoryAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Date");
+        yAxis.setLabel("Price");
+
+        // Create the line chart
+        final LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("5 Day Moving Average for " + stockSymbol);
+
+        // Create a series for the 5 day moving average values and add it to the line chart
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("5 Day Moving Average");
+        for (int i = 0; i < movingAverages.size(); i++) {
+            series.getData().add(new XYChart.Data<>(dates.get(i), Double.valueOf(movingAverages.get(i))));
+        }
+        lineChart.getData().add(series);
+
+        return lineChart;
+    }
+
+    private Pane holdingSceneGUI(UserAccount currentUser) throws IOException {
         GridPane holdingDataPane = new GridPane();
         holdingDataPane.setAlignment(Pos.CENTER);
         holdingDataPane.setPadding(new Insets(20));
@@ -850,52 +995,123 @@ public class StockApp extends Application implements Serializable {
 
         VBox vbox = new VBox();
 
-        ObservableList<StockData> oList = FXCollections.observableList(currentUser.getWallet().getStocks());
-        System.out.println("Listview: " + currentUser.getWallet().getStocks().size());
+        List<StockData> stockList = currentUser.getWallet().getStocks();
+        Collections.reverse(stockList);
+        ObservableList<StockData> oList = FXCollections.observableList(stockList);
+
 
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
 
+        double totalValue = 0;
         for (StockData stock : currentUser.getWallet().getStocks()) {
-            pieChartData.add(new PieChart.Data(stock.getSymbol(), stock.getShares()));
+            String symbol = stock.getSymbol();
+            double value = stock.getShares() * getCurrentStockPrice(symbol);
+            totalValue += value;
+        }
+
+        for (StockData stock : currentUser.getWallet().getStocks()) {
+            String symbol = stock.getSymbol();
+            double value = stock.getShares() * getCurrentStockPrice(symbol);
+            double percentage = value / totalValue * 100;
+            boolean found = false;
+            for (PieChart.Data data : pieChartData) {
+                if (data.getName().equals(symbol)) {
+                    data.setPieValue(percentage);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                pieChartData.add(new PieChart.Data(symbol, percentage));
+            }
         }
 
         PieChart pieChart = new PieChart();
-
+        double investmentMoney = currentUser.getTotalMoney(currentUser) - currentUser.getCashAmount();
+        pieChart.setTitle(currentUser.getFirstName() + "'s Portfolio and Recent Transactions.\nTotal Investment: $" + roundToDollarAmount(investmentMoney));
         pieChart.setData(pieChartData);
 
         ListView<StockData> listView = new ListView<>(oList);
-        listView.setPrefWidth(500);
+        listView.setPrefWidth(620);
         vbox.getChildren().add(listView);
-
 
         Button btnCancel = new Button("Back");
         btnCancel.setPrefWidth(60);
         btnCancel.setAlignment(Pos.CENTER);
 
+
+
+
         btnCancel.setOnAction(e->{
-            stage.setScene(hsScene);
-        });
-
-        Button btnSell = new Button("Sell");
-
-        btnSell.setOnAction(e->{
-            StockData sellStock = listView.getSelectionModel().getSelectedItem();
             try {
-                currentUser.setCashAmount(currentUser.getCashAmount() + currentUser.getWallet().sellStock(sellStock, getCurrentStockPrice(sellStock.getSymbol())));
+                hsScene = new Scene(homeScreenGUI(),1900, 1000);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            holdingScene = new Scene(holdingSceneGUI(currentUser), 1200, 800);
+            hsScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
+            stage.setScene(hsScene);
+        });
+
+        Label labelInstructions = new Label("Please Select A Transaction to Sell a Stock From.");
+        TextField tfShareCount = new TextField();
+        tfShareCount.setPromptText("Enter Share(s) Count to Sell");
+        tfShareCount.setPrefWidth(60);
+        Button btnSell = new Button("Sell");
+        btnSell.setPrefWidth(60);
+
+        VBox sellVbox = new VBox();
+        sellVbox.getChildren().addAll(tfShareCount, btnSell);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        btnSell.setOnAction(e->{
+            StockData sellStock = listView.getSelectionModel().getSelectedItem();
+            String sharesString = tfShareCount.getText();
+            int sharesInt = 0;
+            try {
+                sharesInt = Integer.valueOf(sharesString);
+            } catch (NumberFormatException error) {
+                alert.setHeaderText("Invalid Entry.");
+                alert.setContentText("Share Count Must be a Whole Number,\nOr Text-Field is Empty.");
+                alert.showAndWait();
+                return;
+            }
+            if (sharesInt > ((int)sellStock.getShares())) {
+                alert.setHeaderText("User Does Not Own Enough Shares!");
+                alert.showAndWait();
+
+                return;
+            }
+            try {
+                alert.setHeaderText("Sell Successful.");
+                alert.setContentText("You Have Sold "+sharesInt+" Shares of " + sellStock.getSymbol());
+                alert.showAndWait();
+                currentUser.setCashAmount(currentUser.getCashAmount() + currentUser.getWallet().sellStock(sellStock, getCurrentStockPrice(sellStock.getSymbol()), sharesInt));
+                currentUser.getWallet().newSell(sellStock, getCurrentStockPrice(sellStock.getSymbol()), sharesInt);
+                holdingScene = new Scene(holdingSceneGUI(currentUser),1900, 1000);
+            } catch (IOException ex) {
+               throw new RuntimeException(ex);
+            }
             holdingScene.getStylesheets().add(getClass().getResource("ApplicationStyle.css").toExternalForm());
             stage.setScene(holdingScene);
         });
 
         vbox.getChildren().add(pieChart);
 
+
+        List<SellStock> sellTransactionList = (currentUser.getWallet().getSell());
+        ObservableList<SellStock> oList2 = FXCollections.observableList(sellTransactionList);
+        ListView<SellStock> sellTransactionListView = new ListView<>(oList2);
+
+        sellTransactionListView.setPrefWidth(620);
+
+        holdingDataPane.add(sellTransactionListView, 8, 2);
+
         holdingDataPane.add(btnCancel, 1, 0);
-        holdingDataPane.add(vbox, 1, 4);
-        holdingDataPane.add(listView, 6, 4);
-        holdingDataPane.add(btnSell, 7, 7);
+        holdingDataPane.add(vbox, 1, 2);
+        holdingDataPane.add(listView, 4, 2);
+        holdingDataPane.add(labelInstructions, 6, 8);
+        holdingDataPane.add(tfShareCount, 6, 9);
+        holdingDataPane.add(btnSell, 6, 10);
 
         return holdingDataPane;
     }

@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad90bed3-724a-4bb8-b6ca-4b8a1dba40b2" name="Changes" comment="First Commit.">
+    <list default="true" id="ad90bed3-724a-4bb8-b6ca-4b8a1dba40b2" name="Changes" comment="Third Commit.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ApplicationData.dat" beforeDir="false" afterPath="$PROJECT_DIR$/ApplicationData.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/DataCenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/DataCenter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/UserWallet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/UserWallet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/kingstradingapplication/ApplicationStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/example/kingstradingapplication/ApplicationStyle.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +43,26 @@
     &quot;last_opened_file_path&quot;: &quot;D:/School/KingsTradingApplication&quot;
   }
 }</component>
+  <component name="RunManager">
+    <configuration name="StockApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.kingstradingapplication.StockApp" />
+      <module name="KingsTradingApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.kingstradingapplication.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.StockApp" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -57,7 +79,14 @@
       <option name="project" value="LOCAL" />
       <updated>1671254437562</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Second Commit.">
+      <created>1671262465197</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1671262465197</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -73,6 +102,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First Commit." />
-    <option name="LAST_COMMIT_MESSAGE" value="First Commit." />
+    <MESSAGE value="Second Commit." />
+    <option name="LAST_COMMIT_MESSAGE" value="Second Commit." />
   </component>
 </project>

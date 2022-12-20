@@ -3,7 +3,9 @@
   -fx-padding: 10px;
   -fx-hgap: 10px;
   -fx-vgap: 10px;
-}
+  }
+
+
 
 .label {
   -fx-font-size: 14px;
@@ -128,4 +130,9 @@
 
 .pie-chart .default-color1.chart-pie {
   -fx-pie-color: #0052cc;
+}
+
+.shine {
+  -fx-effect: dropshadow(gaussian, gold, 20, 0.5, 0, 0);
+  -font-size: 24px;
 }
