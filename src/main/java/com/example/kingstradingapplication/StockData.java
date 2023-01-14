@@ -106,11 +106,13 @@ public class StockData implements Serializable{
     @Override
     public String toString() {
         try {
+            double newValue = (getCurrentStockPrice(symbol)*shares);
+            double oldValue = price * shares;
             return type +
                     " of Ticker: '" + symbol + "'" +
                     ", Current Price: " + roundToDollarAmount(getCurrentStockPrice(symbol))+
                     ", Share(s) Owned: " + shares +
-                    ", P/L: " + roundToDollarAmount((getCurrentStockPrice(symbol)*shares) - value) +
+                    ", P/L: " + roundToDollarAmount(newValue - oldValue) +
                     "\nTransaction Date: " + datePurchased +
                     ", Total "+type+": $" +value +
                     ", For: $" + roundToDollarAmount(price) + " Per-Share.";

@@ -109,7 +109,7 @@ public class SellStock implements Serializable {
             return type +
                     " of Ticker: '" + symbol + "'" +
                     ", Current Price: " + roundToDollarAmount(getCurrentStockPrice(symbol))+
-                    ", Share(s) Owned: " + shares +
+                    ", Share(s) Sold: " + shares +
                     ", P/L: " + roundToDollarAmount((getCurrentStockPrice(symbol)*shares) - value) +
                     "\nTransaction Date: " + datePurchased +
                     ", Total "+type+": $" +value +
