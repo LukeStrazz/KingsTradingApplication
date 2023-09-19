@@ -132,7 +132,6 @@
   -fx-pie-color: #0052cc;
 }
 
-.shine {
+#title-label {
   -fx-effect: dropshadow(gaussian, gold, 20, 0.5, 0, 0);
-  -font-size: 24px;
 }

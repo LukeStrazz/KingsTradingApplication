@@ -110,7 +110,7 @@ public class StockData implements Serializable{
                     " of Ticker: '" + symbol + "'" +
                     ", Current Price: " + roundToDollarAmount(getCurrentStockPrice(symbol))+
                     ", Share(s) Owned: " + shares +
-                    ", P/L: " + roundToDollarAmount((getCurrentStockPrice(symbol)*shares) - value) +
+                    ", P/L: " + 0 +
                     "\nTransaction Date: " + datePurchased +
                     ", Total "+type+": $" +value +
                     ", For: $" + roundToDollarAmount(price) + " Per-Share.";

@@ -157,12 +157,22 @@ public class StockApp extends Application implements Serializable {
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(true);
 
-        KeyValue effect = new KeyValue(titleLabel.styleProperty(), "-fx-effect: dropshadow(gaussian, gold, 20, 0.5, 0, 0);");
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(2000), effect);
+// Set the start value for the animation
+        KeyValue start = new KeyValue(titleLabel.styleProperty(), ""); // default style
+
+// Set the end value for the animation
+        KeyValue end = new KeyValue(titleLabel.styleProperty(), "highlight");
+
+// Create a key frame with the start and end values
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(2000), start, end);
+
+// Add the key frame to the timeline
         timeline.getKeyFrames().add(keyFrame);
+
+// Play the timeline
         timeline.play();
 
-        titleLabel.setStyle("-fx-effect: dropshadow(gaussian, gold, 20, 0.5, 0, 0);");
+        titleLabel.setStyle(".shine");
 
         return loginPane;
     }
