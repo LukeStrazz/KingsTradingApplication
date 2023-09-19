@@ -8,9 +8,13 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ApplicationData.dat" beforeDir="false" afterPath="$PROJECT_DIR$/ApplicationData.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/SellStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/SellStock.java" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/kingstradingapplication/ApplicationStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/example/kingstradingapplication/ApplicationStyle.css" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/kingstradingapplication/StockData.java" afterDir="false" />
+>>>>>>> b77d56421f8f1c083cfc4b237339ec9d67e8d80f
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
